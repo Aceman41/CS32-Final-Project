@@ -31,3 +31,4 @@ Checking win condition
 Need to work out the separate pots for if a player goes all in early in the round against players with more chips who continue betting
 This will be a larger, difficult step
 Overall, managing data structures (hands, decks, cards, etc.) will be the first big task, determining winners comes next, followed by betting, and lastly interconnected computers for multiple/separate device players.
+
