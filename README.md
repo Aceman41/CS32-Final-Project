@@ -52,8 +52,9 @@ Overall, managing data structures (hands, decks, cards, etc.) will be the first 
 ***UPDATE***
 We have doubled down on this idea and begun implementing some of the steps above. 
 We have begun with setting up a deck, hands, and preliminary functions.
-There are some issues with constructing the hands within for loops through an array but we're working on it since it is definitiely possible. 
 
 Our primary concern at the moment is to accomplish all of the separatre tasks of the game but not to put them together to reate one full game or round yet. 
 
 We currently have the initial dealing functions and structures set up. We might begin adapting the code for the initial deal to also run the flop (frist three community cards), the turn (fourth), the river (fifth), but betting is a much more complex process, especially for the computer players. We'll be in office hours to ask about this, other structures we need to include, and what other functions we could develop now.
+
+Currently, the player can input the number of computers to play against and the automated dealer reacts by dealing that number of hands.
