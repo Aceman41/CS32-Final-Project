@@ -1,0 +1,64 @@
+import random
+
+deck = ["AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH", "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD"]
+player_hole = []
+comp1_hole = []
+comp2_hole = []
+comp3_hole = []
+comp4_hole = []
+comp5_hole = []
+comp6_hole = []
+comp_holes = [comp1_hole, comp2_hole, comp3_hole, comp4_hole, comp5_hole, comp6_hole]
+community_pot = []
+burned_cards = []
+
+print("###/ Welcome to Texas Hold 'Em \###\n")
+print('You can play with as few as 1 and as many as 6 computers.')
+while True:
+  options = ['1', '2', '3', '4', '5', '6']
+  try:
+    how_many_comps = input("Input the number of computers you would like to play with: ")
+    if how_many_comps not in options:
+      raise Exception
+    break
+  except:
+    print("You must choose between 1 and 6 computers to play with. Please try again.\n")
+
+random.shuffle(deck)
+
+def initial_deal(num_of_comps):
+  player_hole.append(deck.pop(0))
+  player_hole.append(deck.pop(0))
+
+  for i in range(int(num_of_comps)):
+    comp_holes[i].append(deck.pop(0))
+    comp_holes[i].append(deck.pop(0))
+
+## For next additions, work out a betting function to run after initial deal and between community + burn deals
+## Adapt community + burn deals from initial deal definition
+##
+## General Game Outline:
+##      1. initial deal
+##      2. betting
+##      3. burn card
+##      4. put 3 'flop' cards into community pot
+##      5. betting
+##      6. burn another card
+##      7. put the 4th 'turn' card into the community pot
+##      8. betting
+##      9. burn another card
+##     10. put the 5th 'river' card into the community pot
+##     11. final betting
+##     12. round ends
+
+initial_deal(how_many_comps)
+
+## Temporary print statements below show that number of computer inputs, shuffling, and initial dealing all work as intended
+
+print(f'Player hole: ', player_hole)
+print(f'Comp 1 hole: ', comp1_hole)
+print(f'Comp 2 hole: ', comp2_hole)
+print(f'Comp 3 hole: ', comp3_hole)
+print(f'Comp 4 hole: ', comp4_hole)
+print(f'Comp 5 hole: ', comp5_hole)
+print(f'Comp 6 hole: ', comp6_hole)
