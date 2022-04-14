@@ -58,3 +58,15 @@ Our primary concern at the moment is to accomplish all of the separatre tasks of
 We currently have the initial dealing functions and structures set up. We might begin adapting the code for the initial deal to also run the flop (frist three community cards), the turn (fourth), the river (fifth), but betting is a much more complex process, especially for the computer players. We'll be in office hours to ask about this, other structures we need to include, and what other functions we could develop now.
 
 Currently, the player can input the number of computers to play against and the automated dealer reacts by dealing that number of hands.
+
+
+
+
+
+STEPS:
+2 human players (copy client server stuff)
+game
+  one hand running successfully
+  multiple consecutive hands until somoen is at $0 or decides to walk away with earnings
+Slowly replace second player with smart computer
+Betting
