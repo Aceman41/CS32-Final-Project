@@ -112,6 +112,7 @@ def betting(num_of_players, bet_pot):
                   ValueError()
               break
             if mrf == 'fold':
+              # quirk: forces player to make a bet before folding, but the bet can be 0
               bet_list.remove(i)
               player_holes[player-1] = []
               break
