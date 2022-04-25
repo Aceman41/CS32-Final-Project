@@ -46,6 +46,8 @@ def community_deal(num_of_cards):
     community_pot.append(deck.pop(0))
 
 def betting(num_of_players, bet_pot):
+  # quirk: initially allows player to bet an amount lower than the previous player's bet, 
+  # but then goes to the standard prompt for the lower bet to match, raise, or fold
   bet_list = []
   for i in range(int(num_of_players)+1):
     while True:
@@ -89,6 +91,7 @@ def betting(num_of_players, bet_pot):
               bet_list[bet_list.index(i)] = highest_bet
               break
             if mrf == 'raise':
+              # quirk: allows player to raise after having already raised
               while True:
                 try:
                   bet = int(input("Enter the amount to which you'd like to raise your bet: "))
