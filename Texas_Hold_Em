@@ -20,6 +20,7 @@ player6_bal = 0
 player7_bal = 0
 player_bals = [player1_bal, player2_bal, player3_bal, player4_bal, player5_bal, player6_bal, player7_bal]
 bet_pot = 0
+bet_list = []
 
 print("###/ Welcome to Texas Hold 'Em \###\n")
 print('You can play with as few as 1 and as many as 6 people.')
@@ -45,9 +46,10 @@ def community_deal(num_of_cards):
     community_pot.append(deck.pop(0))
 
 def betting(num_of_players, bet_pot):
+  bet_list = []
   for i in range(int(num_of_players)+1):
     while True:
-      print(f'Player {i+1}: ')
+      print(f'\nPlayer {i+1}: ')
       if player_bals[i] == 0:
         player_bals[i] = 100
       try:
@@ -57,21 +59,64 @@ def betting(num_of_players, bet_pot):
         if 0 > bet:
           raise ValueError('Cannot bet a negative amount. Try Again.')
         player_bals[i] = player_bals[i] - bet
+        bet_list.append(bet)
         bet_pot += bet
         print(f'bet pot: ', bet_pot)
         break
       except:
         ValueError()
-  #if bets weren't equal, prompt player with higher balance (one who bet less) to either:
-  # 1. match the other person's bet
-  # 2. raise to a higher bet
-  # 3. fold
+  while all(element == max(bet_list) for element in bet_list) != True:
+    highest_bet = int(max(bet_list))
+    player = 0
+    for i in bet_list:
+      player += 1
+      if highest_bet == int(i):
+        continue
+      if highest_bet > int(i):
+        while True:
+          print(f'\nPlayer {player}: ')
+          options2 = ['match', 'raise', 'fold']
+          try:
+            mrf = input(f"You must match the highest bet of {highest_bet}, raise to a higher bet, or fold.\nPlease input 'match', 'raise', or 'fold': ")
+            if mrf not in options2:
+              raise ValueError('You must choose to match, raise, or fold. Try again.')
+            if mrf == 'match':
+              bet_pot -= i
+              bet_pot += highest_bet
+              print(f'bet pot: ', bet_pot)
+              player_bals[player-1] += i
+              player_bals[player-1] -= highest_bet
+              bet_list[bet_list.index(i)] = highest_bet
+              break
+            if mrf == 'raise':
+              while True:
+                try:
+                  bet = int(input("Enter the amount to which you'd like to raise your bet: "))
+                  if bet > player_bals[player-1]:
+                    raise ValueError('Bet cannot exceed player balance. Try Again.')
+                  if highest_bet >= bet:
+                    raise ValueError(f'You cannot raise your bet to an amount lower than or equal to {highest_bet}. Try Again.')
+                  if 0 > bet:
+                    raise ValueError('Cannot bet a negative amount. Try Again.')
+                  bet_pot -= i
+                  bet_pot += bet
+                  print(f'bet pot: ', bet_pot)
+                  player_bals[player-1] += i
+                  player_bals[player-1] -= bet
+                  bet_list[bet_list.index(i)] = bet
+                  break
+                except:
+                  ValueError()
+              break
+            if mrf == 'fold':
+              bet_list.remove(i)
+              player_holes[player-1] = []
+              break
+          except:
+            ValueError('You must choose to match, raise, or fold. Try again.')
   return bet_pot
-  
 
-
-## For next additions: (1) fix betting behavior (see above comments), (2) create logic that determines whose hand is best,
-## (3) put game into game loop so it runs more elegantly
+## For next additions: (1) create logic that determines whose hand is best
 ##
 ## General Game Outline:
 ##      1. initial deal
@@ -88,43 +133,72 @@ def betting(num_of_players, bet_pot):
 ##     12. round ends
 
 initial_deal(how_many_players)
-print("\nEach player will start with a balance of 100.\nBets must not exceed a player's balance and must be a positive number.\n")
-bet_pot = betting(how_many_players, bet_pot)
-print(f'Player 1 balance: ', player_bals[0])
-print(f'Player 2 balance: ', player_bals[1])
-burned_cards.append(deck.pop(0))
-print(f'Burned Cards: ', burned_cards)
-community_deal('3')
-print(f'Community Pot: ', community_pot)
-bet_pot = betting(how_many_players, bet_pot)
-print(f'Player 1 balance: ', player_bals[0])
-print(f'Player 2 balance: ', player_bals[1])
-burned_cards.append(deck.pop(0))
-print(f'Burned Cards: ', burned_cards)
-community_deal('1')
-print(f'Community Pot: ', community_pot)
-bet_pot = betting(how_many_players, bet_pot)
-print(f'Player 1 balance: ', player_bals[0])
-print(f'Player 2 balance: ', player_bals[1])
-burned_cards.append(deck.pop(0))
-print(f'Burned Cards: ', burned_cards)
-community_deal('1')
-print(f'Community Pot: ', community_pot)
-bet_pot = betting(how_many_players, bet_pot)
-print(f'Player 1 balance: ', player_bals[0])
-print(f'Player 2 balance: ', player_bals[1])
-
+while True:
+  print("\nEach player will start with a balance of 100.\nBets must not exceed a player's balance and must be a positive number.")
+  bet_pot = betting(how_many_players, bet_pot)
+  if len([i for i in player_holes if i]) <= 1:
+    for j in player_holes:
+      if j != []:
+        ind = player_holes.index(j)
+        player_bals[ind] += bet_pot
+        bet_pot = 0
+    break
+  print(f'Player 1 balance: ', player_bals[0])
+  print(f'Player 2 balance: ', player_bals[1])
+  burned_cards.append(deck.pop(0))
+  print(f'Burned Cards: ', burned_cards)
+  community_deal('3')
+  print(f'Community Pot: ', community_pot)
+  bet_pot = betting(how_many_players, bet_pot)
+  if len([i for i in player_holes if i]) <= 1:
+    for j in player_holes:
+      if j != []:
+        ind = player_holes.index(j)
+        player_bals[ind] += bet_pot
+        bet_pot = 0
+    break
+  print(f'Player 1 balance: ', player_bals[0])
+  print(f'Player 2 balance: ', player_bals[1])
+  burned_cards.append(deck.pop(0))
+  print(f'Burned Cards: ', burned_cards)
+  community_deal('1')
+  print(f'Community Pot: ', community_pot)
+  bet_pot = betting(how_many_players, bet_pot)
+  if len([i for i in player_holes if i]) <= 1:
+    for j in player_holes:
+      if j != []:
+        ind = player_holes.index(j)
+        player_bals[ind] += bet_pot
+        bet_pot = 0
+    break
+  print(f'Player 1 balance: ', player_bals[0])
+  print(f'Player 2 balance: ', player_bals[1])
+  burned_cards.append(deck.pop(0))
+  print(f'Burned Cards: ', burned_cards)
+  community_deal('1')
+  print(f'Community Pot: ', community_pot)
+  bet_pot = betting(how_many_players, bet_pot)
+  if len([i for i in player_holes if i]) <= 1:
+    for j in player_holes:
+      if j != []:
+        ind = player_holes.index(j)
+        player_bals[ind] += bet_pot
+        bet_pot = 0
+    break
+  print(f'Player 1 balance: ', player_bals[0])
+  print(f'Player 2 balance: ', player_bals[1])
+  break
 
 ## Temporary print statements below show that number of computer inputs, shuffling, and initial dealing all work as intended
 
 print('\n')
-print(f'Player 1 hole: ', player1_hole)
-print(f'Player 2 hole: ', player2_hole)
-print(f'Player 3 hole: ', player3_hole)
-print(f'Player 4 hole: ', player4_hole)
-print(f'Player 5 hole: ', player5_hole)
-print(f'Player 6 hole: ', player6_hole)
-print(f'Player 7 hole: ', player7_hole)
+print(f'Player 1 hole: ', player_holes[0])
+print(f'Player 2 hole: ', player_holes[1])
+print(f'Player 3 hole: ', player_holes[2])
+print(f'Player 4 hole: ', player_holes[3])
+print(f'Player 5 hole: ', player_holes[4])
+print(f'Player 6 hole: ', player_holes[5])
+print(f'Player 7 hole: ', player_holes[6])
 print(f'Community Pot: ', community_pot)
 print(f'Burned Cards: ', burned_cards)
 print(f'Player 1 balance: ', player_bals[0])
