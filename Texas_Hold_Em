@@ -48,6 +48,7 @@ def community_deal(num_of_cards):
 def betting(num_of_players, bet_pot):
   # quirk: initially allows player to bet an amount lower than the previous player's bet, 
   # but then goes to the standard prompt for the lower bet to match, raise, or fold
+  # also doesn't account for blinds at all (but that's okay for now)
   bet_list = []
   for i in range(int(num_of_players)+1):
     while True:
@@ -55,7 +56,7 @@ def betting(num_of_players, bet_pot):
       if player_bals[i] == 0:
         player_bals[i] = 100
       try:
-        bet = int(input("Enter the amount you want to bet: "))
+        bet = int(input("Enter the amount you want to bet. If you want to fold, enter '0' and fold when prompted.\nBet Amount: "))
         if bet > player_bals[i]:
           raise ValueError('Bet cannot exceed player balance. Try Again.')
         if 0 > bet:
