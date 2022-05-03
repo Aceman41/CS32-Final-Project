@@ -1,5 +1,11 @@
 import random
+import time
 
+## Although our game gives you the option to play with up to seven people, we designed it for the purposes of this project
+## so that 2 people could play together. Likewise, there are some bugs (see comments throughout) when a user opts to play 
+## with more than one other person. If we continued working on this project, this is one of the issues we would address.
+
+## Definine data structures to hold cards, player balances, and bets
 deck = ["AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "TC", "JC", "QC", "KC", "AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "TS", "JS", "QS", "KS", "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "TH", "JH", "QH", "KH", "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "TD", "JD", "QD", "KD"]
 player1_hole = []
 player2_hole = []
@@ -24,6 +30,8 @@ bet_list = []
 
 print("###/ Welcome to Texas Hold 'Em \###\n")
 print('You can play with as few as 1 and as many as 6 people.')
+## allows user to choose how many people will be playing code was designed for 2 people to play for the purposes of this project,
+## so there are some known bugs when one selects more than one other player
 while True:
   options = ['1', '2', '3', '4', '5', '6']
   try:
@@ -34,25 +42,33 @@ while True:
   except:
     print("You must choose between 1 and 6 people to play with. Please try again.\n")
 
+## shuffles deck
 random.shuffle(deck)
 
+## deals cards to players based on how many people are playing
 def initial_deal(num_of_players):
   for i in range(int(num_of_players)+1):
     player_holes[i].append(deck.pop(0))
     player_holes[i].append(deck.pop(0))
 
+## deals cards to community pot (takes in number of cards to be dealt)
 def community_deal(num_of_cards):
   for i in range(int(num_of_cards)):
     community_pot.append(deck.pop(0))
 
+## handles all of betting, including matching, raising, folding, and ensuring that bets are valid based on player balances
+## takes in number of players and current bet pot to prompt appropriate number of players to bet and update bet pot value
 def betting(num_of_players, bet_pot):
   # quirk: initially allows player to bet an amount lower than the previous player's bet, 
   # but then goes to the standard prompt for the lower bet to match, raise, or fold
-  # also doesn't account for blinds at all (but that's okay for now)
+  # also doesn't account for blinds at all (but that's okay for this project)
+  # quirk: when playing with more than 2 people, players are still prompted to bet even after folding
   bet_list = []
+
+  ## takes initial bets from players
   for i in range(int(num_of_players)+1):
     while True:
-      print(f'\nPlayer {i+1}: ')
+      print(f'\n\nPlayer {i+1}: ')
       if player_bals[i] == 0:
         player_bals[i] = 100
       try:
@@ -64,10 +80,12 @@ def betting(num_of_players, bet_pot):
         player_bals[i] = player_bals[i] - bet
         bet_list.append(bet)
         bet_pot += bet
-        print(f'bet pot: ', bet_pot)
+        print(f'\n\nbet pot: ', bet_pot)
         break
       except:
         ValueError()
+
+  ## checks to see if all bets are equal. if not, finds ones that aren't the highest and prompts players to match, raise, or fold
   while all(element == max(bet_list) for element in bet_list) != True:
     highest_bet = int(max(bet_list))
     player = 0
@@ -77,20 +95,25 @@ def betting(num_of_players, bet_pot):
         continue
       if highest_bet > int(i):
         while True:
-          print(f'\nPlayer {player}: ')
+          print(f'\n\nPlayer {player}: ')
           options2 = ['match', 'raise', 'fold']
           try:
             mrf = input(f"You must match the highest bet of {highest_bet}, raise to a higher bet, or fold.\nPlease input 'match', 'raise', or 'fold': ")
             if mrf not in options2:
               raise ValueError('You must choose to match, raise, or fold. Try again.')
+
+            ## handles player opting to match their bet
             if mrf == 'match':
               bet_pot -= i
               bet_pot += highest_bet
-              print(f'bet pot: ', bet_pot)
+              print(f'\n\nbet pot: ', bet_pot)
               player_bals[player-1] += i
               player_bals[player-1] -= highest_bet
               bet_list[bet_list.index(i)] = highest_bet
               break
+
+            ## handles player opting to raise their bet 
+            ## (will reprompt other player who previously had highest bet to match, raise, or fold)
             if mrf == 'raise':
               # quirk: allows player to raise after having already raised
               while True:
@@ -104,7 +127,7 @@ def betting(num_of_players, bet_pot):
                     raise ValueError('Cannot bet a negative amount. Try Again.')
                   bet_pot -= i
                   bet_pot += bet
-                  print(f'bet pot: ', bet_pot)
+                  print(f'\n\nbet pot: ', bet_pot)
                   player_bals[player-1] += i
                   player_bals[player-1] -= bet
                   bet_list[bet_list.index(i)] = bet
@@ -112,35 +135,142 @@ def betting(num_of_players, bet_pot):
                 except:
                   ValueError()
               break
+
+            ## handles player opting to fold their hand
             if mrf == 'fold':
               # quirk: forces player to make a bet before folding, but the bet can be 0
+              # quirtk: when playing with more than 2 people, hands might not empty properly when folding
               bet_list.remove(i)
               player_holes[player-1] = []
               break
           except:
             ValueError('You must choose to match, raise, or fold. Try again.')
+  ## returns value of updated bet pot
   return bet_pot
 
-## For next additions: (1) create logic that determines whose hand is best
-##
-## General Game Outline:
-##      1. initial deal
-##      2. betting
-##      3. burn card
-##      4. put 3 'flop' cards into community pot
-##      5. betting
-##      6. burn another card
-##      7. put the 4th 'turn' card into the community pot
-##      8. betting
-##      9. burn another card
-##     10. put the 5th 'river' card into the community pot
-##     11. final betting
-##     12. round ends
+## couldn't get the hand classification function working, but this is the general structure of what
+## the function would look like if we continued this project
 
+#def hand_classification(player_holes, community_pot):
+  #This part combines the hands to make sorting easier
+#  spades = 0
+#  hearts = 0
+#  clubs = 0
+#  diamonds = 0
+#  twos = 0
+#  threes = 0
+#  fours = 0
+#  fives = 0
+#  sixes = 0
+#  sevens = 0
+#  eights = 0
+#  nines = 0
+#  tens = 0
+#  jacks = 0
+#  queens = 0
+#  kings = 0
+#  aces = 0
+
+#  for i in range(len(player_holes)):
+#      player_holes[i].append(community_pot)
+#      for j in player_holes[i]:
+#          player_holes[i] = player_holes[i].replace("T", "10")
+#          player_holes[i] = player_holes[i].replace("J", "11")
+#          player_holes[i] = player_holes[i].replace("Q", "12")
+#          player_holes[i] = player_holes[i].replace("K", "13")
+#          player_holes[i] = player_holes[i].replace("A", "14")
+#      player_holes[i] = sorted(player_holes[i])
+#      for j in player_holes[i]:
+#          if player_holes[i][j] == "S":
+#              spades = spades + 1
+#          if player_holes[i][j] == "H":
+#              hearts = hearts + 1
+#          if player_holes[i][j] == "C":
+#              clubs = clubs + 1
+#          if player_holes[i][j] == "D":
+#              diamonds = diamonds + 1
+#          if player_holes[i][j] == "2":
+#              twos = twos + 1
+#          if player_holes[i][j] == "3":
+#              threes = threes + 1
+#          if player_holes[i][j] == "4":
+#              fours = fours + 1
+#          if player_holes[i][j] == "5":
+#              fives = fives + 1
+#          if player_holes[i][j] == "6":
+#              sixes = sixes + 1
+#          if player_holes[i][j] == "7":
+#              sevens = sevens + 1
+#          if player_holes[i][j] == "8":
+#              eights = eights + 1
+#          if player_holes[i][j] == "9":
+#              nines = nines + 1
+#          if player_holes[i][j] == "10":
+#              tens = tens + 1
+#          if player_holes[i][j] == "11":
+#              jacks = jacks + 1
+#          if player_holes[i][j] == "12":
+#              queens = queens + 1
+#          if player_holes[i][j] == "13":
+#              kings = kings + 1
+#          if player_holes[i][j] == "14":
+#              aces = aces + 1
+#      suit_count = [spades, hearts, clubs, diamonds]
+#      card_count = [twos, threes, fours, fives, sixes, sevens, eights, nines, tens, jacks, queens, kings, aces]
+#      for j in range(len(suit_count)):
+#          if suit_count[j] == 5:
+              #flush!
+#              print('flush!')
+#      for j in range(len(card_count)):
+#          if card_count[j] == 2:
+              #pair!
+#              print('pair!')
+#          if card_count[j] == 3:
+              #three of a kind!
+#              print('three of a kind!')
+              #if card_count[~j] == 2 #this is a new thing ~ we didnt learn
+                  #full house!
+#                  print('full house!')
+#          if card_count[j] == 4:
+              #four of a kind!
+#              print('four of a kind!')
+
+
+
+          #need someway to assign highest card ie max of player_holes[i] = high_card[i]
+
+          #straight too
+
+## initial deal to selected number of players
 initial_deal(how_many_players)
+## shows players their hands with a slight delay and spacing so that players can pass the computer and let the next person see
+## their hand without revealing their own hand
+for j in range(int(how_many_players)+1):
+      print(f'\n\nPlayer {j+1} hand displaying in...')
+      time.sleep(1)
+      print('7')
+      time.sleep(1)
+      print('6')
+      time.sleep(1)
+      print('5')
+      time.sleep(1)
+      print('4')
+      time.sleep(1)
+      print('3')
+      time.sleep(1)
+      print('2')
+      time.sleep(1)
+      print('1')
+      print(f'Player {j+1} hand: {player_holes[j]}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+
+## game loop that activates all remaining gameplay. for multiple rounds, we'd just need to contain this for loop along with the
+## initial deal and hand display in another while True loop
 while True:
-  print("\nEach player will start with a balance of 100.\nBets must not exceed a player's balance and must be a positive number.")
+  print("\n\nEach player will start with a balance of 100.\nBets must not exceed a player's balance and must be a positive number.")
+  ## prompts betting and updates bet_pot value
   bet_pot = betting(how_many_players, bet_pot)
+  ## checks to see if all players but one have folded after betting. if true, awards bet pot to remaining player and breaks the
+  ## game loop, ending the game
   if len([i for i in player_holes if i]) <= 1:
     for j in player_holes:
       if j != []:
@@ -148,12 +278,15 @@ while True:
         player_bals[ind] += bet_pot
         bet_pot = 0
     break
-  print(f'Player 1 balance: ', player_bals[0])
-  print(f'Player 2 balance: ', player_bals[1])
+  ## displays player balances after betting
+  for j in range(int(how_many_players)+1):
+    print(f'Player {j+1} balance: ', player_bals[j])
+  ## burns card (can remove below comment if you want to see burned cards, but not necessary)
   burned_cards.append(deck.pop(0))
-  print(f'Burned Cards: ', burned_cards)
+  #print(f'Burned Cards: ', burned_cards)
+  ## does the community deal and displays the community pot
   community_deal('3')
-  print(f'Community Pot: ', community_pot)
+  print(f'\n\nCommunity Pot: ', community_pot)
   bet_pot = betting(how_many_players, bet_pot)
   if len([i for i in player_holes if i]) <= 1:
     for j in player_holes:
@@ -162,12 +295,12 @@ while True:
         player_bals[ind] += bet_pot
         bet_pot = 0
     break
-  print(f'Player 1 balance: ', player_bals[0])
-  print(f'Player 2 balance: ', player_bals[1])
+  for j in range(int(how_many_players)+1):
+    print(f'Player {j+1} balance: ', player_bals[j])
   burned_cards.append(deck.pop(0))
-  print(f'Burned Cards: ', burned_cards)
+  #print(f'Burned Cards: ', burned_cards)
   community_deal('1')
-  print(f'Community Pot: ', community_pot)
+  print(f'\n\nCommunity Pot: ', community_pot)
   bet_pot = betting(how_many_players, bet_pot)
   if len([i for i in player_holes if i]) <= 1:
     for j in player_holes:
@@ -176,12 +309,12 @@ while True:
         player_bals[ind] += bet_pot
         bet_pot = 0
     break
-  print(f'Player 1 balance: ', player_bals[0])
-  print(f'Player 2 balance: ', player_bals[1])
+  for j in range(int(how_many_players)+1):
+    print(f'Player {j+1} balance: ', player_bals[j])
   burned_cards.append(deck.pop(0))
-  print(f'Burned Cards: ', burned_cards)
+  #print(f'Burned Cards: ', burned_cards)
   community_deal('1')
-  print(f'Community Pot: ', community_pot)
+  print(f'\n\nCommunity Pot: ', community_pot)
   bet_pot = betting(how_many_players, bet_pot)
   if len([i for i in player_holes if i]) <= 1:
     for j in player_holes:
@@ -190,27 +323,16 @@ while True:
         player_bals[ind] += bet_pot
         bet_pot = 0
     break
-  print(f'Player 1 balance: ', player_bals[0])
-  print(f'Player 2 balance: ', player_bals[1])
+  ## below is where the hand classification function would be called if we were to implement it
+  #hand_classification(player_holes, community_pot)
+  ## displays community pot and player hands to allow players to determine a winner
+  print(f'\n\nCommunity Pot: ', community_pot)
+  for j in range(int(how_many_players)+1):
+      print(f'Player {j+1} hand: {player_holes[j]}')
+  ## allows users to enter the player who won so they can be awarded the value of the bet_pot
+  who_won = int(input('\n\nEnter the number of the player who won to award them balance of the bet pot: '))
+  player_bals[who_won-1] += bet_pot
+  bet_pot = 0
+  for j in range(int(how_many_players)+1):
+    print(f'Player {j+1} balance: ', player_bals[j])
   break
-
-## Temporary print statements below show that number of computer inputs, shuffling, and initial dealing all work as intended
-
-print('\n')
-print(f'Player 1 hole: ', player_holes[0])
-print(f'Player 2 hole: ', player_holes[1])
-print(f'Player 3 hole: ', player_holes[2])
-print(f'Player 4 hole: ', player_holes[3])
-print(f'Player 5 hole: ', player_holes[4])
-print(f'Player 6 hole: ', player_holes[5])
-print(f'Player 7 hole: ', player_holes[6])
-print(f'Community Pot: ', community_pot)
-print(f'Burned Cards: ', burned_cards)
-print(f'Player 1 balance: ', player_bals[0])
-print(f'Player 2 balance: ', player_bals[1])
-print(f'Player 3 balance: ', player_bals[2])
-print(f'Player 4 balance: ', player_bals[3])
-print(f'Player 5 balance: ', player_bals[4])
-print(f'Player 6 balance: ', player_bals[5])
-print(f'Player 7 balance: ', player_bals[6])
-print(f'Bet Pot: ', bet_pot)
