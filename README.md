@@ -59,5 +59,9 @@ Currently, the player can input the number of players to play against and the au
 
 
 ***FINAL SUBMISSION***
+As our final update to the README, we wanted to clarify what exactly we have accomplished. Although we set out with lofty goals, we split up the parts to divide the work and set potential stopping points along the way. We accomplished a lot of these parts, but not all of them. Ultimately, we were able to complete a full poker game between 2 players. This is scalable to the next levels of play but requires more work.
 
+Next Steps: First, is completing the hand classification function. The detail required is somewhat eyond the scope of this projects, and completeing it seems to present an equivalent challenge to the work we've accomplished so far. (The game fully works for two players given that the players determine the winner.) Second, expanding the number of players is an easy task, but for the time being we left it at two for simplicity's sake. Third, the computer players, even with randomized betting, could be slowly added in place of a human player. These player expansions also coincide with the introudction of the ante and blind since it isn't really necessary with just two players.
+
+Some of these tasks are simply beyond what we learned in the class, others are simply too time consuming to finish. Overall, we are satisfied with our outcome and final product. We feel that we were able to showcase our abilities, expand on what we learned, and create something cool.
 
